@@ -40,11 +40,12 @@ int main(int argc, char* argv[]) {
 			printf("pcap_next_ex return %d(%s)\n", res, pcap_geterr(pcap));
 			break;
 		}
+		printf("\n%u bytes captured\n", header->caplen);
 		packet_bundle *bundle = new(packet_bundle, (BYTE *)packet);
-		bundle->print_info(bundle);
-		bundle->clean(bundle);
-
-		printf("%u bytes captured\n", header->caplen);
+		if (bundle) {
+			bundle->print_info(bundle);
+			bundle->clean(bundle);
+		}
 	}
 
 	pcap_close(pcap);

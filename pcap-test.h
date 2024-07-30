@@ -16,6 +16,9 @@
 #define IPv6_ETHER_TYPE 0x86DD
 #define ARP_ETHER_TYPE 0x806
 
+#define VERSION_IPv4 4
+#define VERSION_IPv6 6
+
 #define new(type, data_ptr) _Generic((type){0}, \
     ethernet_header: new_ethernet_header, \
     ip_header: new_ip_header, \
@@ -59,14 +62,19 @@ typedef struct _tcp_header {
     u_int16_t dst_port;
     u_int32_t sequence_num;  // order num
     u_int32_t ack;  // acknowledgment number
-    //u_int8_t offset : 4;  //data offsest : start of tcp segment (size of tcp header = 4 * offset)
-    BYTE *others;
+    u_int8_t header_len : 4;  //data offsest : start of tcp segment (size of tcp header = 4 * offset)
+    u_int8_t reserved :4;
+    u_int8_t flags; 
+    u_int16_t window_size;
+    u_int16_t checksum;
+    u_int16_t urgent_pointer;
 } tcp_header;
 
 typedef struct _packet_bundle {
     ethernet_header *ethernet;
     ip_header *ip;
     tcp_header *tcp;
+    BYTE *other_data;
     struct _packet_bundle *this;
     int (* print_info)(struct _packet_bundle *);
     struct _packet_bundle *(* clean)(struct _packet_bundle *);
@@ -79,12 +87,13 @@ int print_packet_structure(packet_bundle *bundle);
 void print_ethernet_header(ethernet_header ethernet);
 void print_ip_header(ip_header ip);
 void print_tcp_header(tcp_header tcp);
+void print_data(BYTE *ptr);
 ethernet_header *new_ethernet_header(BYTE *ptr);
 ip_header *new_ip_header(BYTE *ptr);
 tcp_header *new_tcp_header(BYTE *ptr);
 packet_bundle *new_packet_bundle(BYTE *ptr);
 packet_bundle *clean_packet_bundle(packet_bundle *this);
 
-
 void usage();
+
 #endif
