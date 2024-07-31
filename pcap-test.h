@@ -30,14 +30,8 @@ typedef unsigned char u_char;
 typedef unsigned short u_short;
 
 typedef struct _ethernet_header {
-	//BYTE preamble[7];
-    //BYTE sfd;
 	BYTE dst_mac[6];
 	BYTE src_mac[6];
-	//u_int16_t len;
-    //BYTE *data;
-	//BYTE fcs[4];
-
     u_int16_t ether_type;
 } ethernet_header;
 

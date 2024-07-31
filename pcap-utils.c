@@ -1,6 +1,5 @@
-#ifndef PCAP_TEST_H
-# include "pcap-test.h"
-#endif
+#include "pcap-test.h"
+
 
 void endian_switch(void *data_ptr, size_t size) {
 	BYTE *tmp = (BYTE *)malloc(size * sizeof(BYTE));

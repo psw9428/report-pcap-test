@@ -1,6 +1,5 @@
-#ifndef PCAP_TEST_H
-# include "pcap-test.h"
-#endif
+#include "pcap-test.h"
+
 
 #define ethernet_type(x) ( \
     (x) == IPv4_ETHER_TYPE ? "IPv4" : \
@@ -72,10 +71,9 @@ void print_tcp_header(tcp_header tcp) {
 }
 
 void print_data(BYTE *ptr) {
-    int len = strlen((char *)ptr);
     int i;
     printf("-----------------Data------------------");
-    for (i = 0; i < 20 && i < len; i++) {
+    for (i = 0; i < 20 ; i++) {
         if (i % 8 == 0) printf("\n");
         else if (i % 4 == 0) printf(" ");
         printf("0x%02x ", ptr[i]);
@@ -109,11 +107,6 @@ ip_header *new_ip_header(BYTE *ptr) {
     
     ip->version = (0b11110000 & (u_int8_t)ptr[0]) >> 4;
     ip->header_len = (0b00001111 & (u_int8_t)ptr[0]);
-    // if ((int)(ip->header_len) * 4 != 20) {
-    //     printf("[*] IP header is not 20 byte\n");
-    //     safe_free(ip, sizeof(ip_header));
-    //     return (0);
-    // }
 
     ptr++;
 
@@ -170,12 +163,6 @@ tcp_header *new_tcp_header(BYTE *ptr) {
     endian_switch(&(tcp->window_size), sizeof(u_int16_t));
     endian_switch(&(tcp->urgent_pointer), sizeof(u_int16_t));
 
-    // if ((int)(tcp->offset) * 4 != 20) {
-    //     printf("[*] TCP header is not 20 byte\n");
-    //     safe_free(tcp, sizeof(ip_header));
-    //     return (0);
-    // }
-
     return (tcp);
 }
 
@@ -204,9 +191,10 @@ packet_bundle *new_packet_bundle(BYTE *ptr) {
     if (!bundle->tcp) return (bundle->clean(bundle));
 
     BYTE *data_ptr = ptr+ETHERNET_HEADER_SIZE+(4*bundle->ip->header_len)+(4*bundle->tcp->header_len);
-    bundle->other_data = (BYTE *)malloc(strlen((char *)data_ptr) + 1);
+    bundle->other_data = (BYTE *)malloc(21);
     if (!bundle->other_data) return (bundle->clean(bundle));
-    strcpy((char *)(bundle->other_data), (char *)data_ptr);
+    bundle->other_data[20] = 0;
+    memcpy(bundle->other_data, data_ptr, 20);
 
     bundle->this = bundle;
 

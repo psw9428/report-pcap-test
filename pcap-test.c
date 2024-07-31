@@ -1,6 +1,5 @@
-#ifndef PCAP_TEST_H
-# include "pcap-test.h"
-#endif
+#include "pcap-test.h"
+
 
 typedef struct {
 	char* dev_;
